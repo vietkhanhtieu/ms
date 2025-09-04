@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  postgres:
+    container_name: catalog-postgres
+    ports:
+      - "5433:5432"
+
+  catalog-api:
+    container_name: catalog-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "8080:8080"
