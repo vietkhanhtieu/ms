@@ -1,5 +1,5 @@
-﻿using Basket.Infractructure.EvenBus;
-using Basket.IntegrationEvents.Events;
+﻿using Basket.IntegrationEvents.Events;
+using EventBus.Abstractions;
 
 namespace Basket.IntegrationEvents.Handlers
 {
@@ -12,7 +12,7 @@ namespace Basket.IntegrationEvents.Handlers
             // Logic to handle the product price change event
             // For example, update the basket items with the new price
             // This is a placeholder for actual implementation
-            Console.WriteLine($"Product Price Changed: ProductId={entity.ProductId}, OldPrice={entity.OldPrice}, NewPrice={entity.NewPrice}, OccurredOn={entity.OccurredOn}");
+            Console.WriteLine($"Product Price Changed: ProductId={entity.ProductId}, OldPrice={entity.OldPrice}, NewPrice={entity.NewPrice}, OccurredOn={entity.OccurredOn}"); 
 
             await Task.CompletedTask; // Simulating async operation
         }

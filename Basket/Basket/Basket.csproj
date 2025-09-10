@@ -25,4 +25,9 @@
     <Folder Include="Repository\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\AppHost1\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
+    <ProjectReference Include="..\..\AppHost1\EventBus\EventBus.csproj" />
+  </ItemGroup>
+
 </Project>

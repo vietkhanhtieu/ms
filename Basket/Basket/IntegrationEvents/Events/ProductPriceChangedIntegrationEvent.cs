@@ -1,6 +1,8 @@
-﻿namespace Basket.IntegrationEvents.Events
+﻿using EventBus.Events;
+
+namespace Basket.IntegrationEvents.Events
 {
-    public class ProductPriceChangedIntegrationEvent
+    public class ProductPriceChangedIntegrationEvent : IntegrationEvent
     {
         public int ProductId { get; set; }
         public decimal OldPrice { get; set; }

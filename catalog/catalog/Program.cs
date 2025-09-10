@@ -1,5 +1,10 @@
+using catalog.IntegrationEvents;
 using catalog.Models;
-using catalog.Repository;
+using catalog.Repository.Implementations;
+using catalog.Repository.Interfaces;
+using EventBus.Abstractions;
+using EventBusRabbitMQ;
+using IntegrationEvenlogEF.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +19,12 @@ builder.Services.AddDbContext<CatalogContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<CatalogRepository>();
+builder.Services.AddScoped<ICatalogRepository ,CatalogRepository>();
+builder.Services.AddScoped<ICatalogIntegrationEventService, CatalogIntegrationEventService>();
+
+builder.Services.AddTransient<IIntegrationEventlogService, IntegrationEventLogServices<CatalogContext>>();
+//builder.Services.AddTransient<IEventBus, RabbitMQEventBus>();
+
 
 var app = builder.Build();
 

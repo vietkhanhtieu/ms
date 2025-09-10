@@ -1,7 +1,7 @@
-﻿namespace Basket.Infractructure.EvenBus
-{
-    public interface IIntegrationEventHandler<T>
-    {
-        Task Handle(T @event);
-    }
-}
+﻿//namespace Basket.Infractructure.EvenBus
+//{
+//    public interface IIntegrationEventHandler<T>
+//    {
+//        Task Handle(T @event);
+//    }
+//}

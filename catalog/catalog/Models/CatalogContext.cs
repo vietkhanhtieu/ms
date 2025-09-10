@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IntegrationEvenlogEF;
+using Microsoft.EntityFrameworkCore;
 
 namespace catalog.Models
 {
@@ -9,6 +10,8 @@ namespace catalog.Models
         }
 
         public DbSet<CatalogItem> CatalogItems { get; set; }
+
+        public DbSet<IntegrationEventLogEntry> integrationEventLogEntries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

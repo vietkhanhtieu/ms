@@ -1,7 +1,8 @@
-using Basket.Infractructure.EvenBus;
 using Basket.IntegrationEvents.Events;
 using Basket.IntegrationEvents.Handlers;
 using Basket.Model;
+using EventBus.Abstractions;
+using EventBusRabbitMQ;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,7 +38,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-var eventBus = new EventBusRabbitMQ("ProductPriceChangedIntegrationEvent");
+var eventBus = new RabbitMQEventBus();
 // Đợi subscription hoàn thành
 await eventBus.SubscribeAsync<ProductPriceChangedIntegrationEvent, ProductPriceChangedIntegrationEventHandler>();
 

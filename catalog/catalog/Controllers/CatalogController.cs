@@ -1,6 +1,8 @@
-﻿using catalog.Infrastructure.EventBus;
+﻿using catalog.IntegrationEvents;
 using catalog.IntegrationEvents.Events;
-using catalog.Repository;
+using catalog.Repository.Implementations;
+using catalog.Repository.Interfaces;
+using EventBusRabbitMQ;
 using Microsoft.AspNetCore.Mvc;
 
 namespace catalog.Controllers
@@ -8,11 +10,13 @@ namespace catalog.Controllers
     [Route("api/[controller]")]
     public class CatalogController : ControllerBase
     {
-        private readonly CatalogRepository _repository;
-        public CatalogController(CatalogRepository catalogRepository)
+        private readonly ICatalogRepository _repository;
+        private readonly ICatalogIntegrationEventService _catalogIntegrationEventService;
+
+        public CatalogController(ICatalogRepository catalogRepository, ICatalogIntegrationEventService catalogIntegrationEventService)
         {
             _repository = catalogRepository ?? throw new ArgumentNullException(nameof(catalogRepository));
-
+            _catalogIntegrationEventService = catalogIntegrationEventService ?? throw new ArgumentNullException(nameof(catalogIntegrationEventService));
         }
 
         [HttpGet]
@@ -26,23 +30,29 @@ namespace catalog.Controllers
         public
             async Task<IActionResult> UpdatePrice(int id, decimal newPrice)
         {
-            var items = await _repository.GetCatalogItemsAsync();
-            var item = items.FirstOrDefault(i => i.Id == id);
+            var item = await _repository.GetCatalogItemByIdAsync(id);
             if (item == null)
             {
                 return NotFound();
             }
+            if (item.Price != newPrice)
+            {
 
-            var oldPrice = item.Price;
-            item.Price = newPrice;
+                var oldPrice = item.Price;
+                item.Price = newPrice;
 
-            // Here you would typically save the changes to the database
-            // await _repository.SaveChangesAsync();
+                // Publish the integration event
+                var integrationEvent = new ProductPriceChangedIntegrationEvent(item.Id, oldPrice, newPrice);
 
-            // Publish the integration event
-            var integrationEvent = new ProductPriceChangedIntegrationEvent(item.Id, oldPrice, newPrice);
-            var eventBus = new EventBusRabbitMQ("ProductPriceChangedIntegrationEvent");
-            eventBus.PublishAsync(integrationEvent);
+                // Use the integration event service to save and publish the event
+                await _catalogIntegrationEventService.SaveEventAndCatalogContextChangesAsync(integrationEvent);
+
+                // Publish through the Event Bus and mark the saved event as published
+                await _catalogIntegrationEventService.PublishThroughEventBusAsync(integrationEvent);
+
+                //var eventBus = new RabbitMQEventBus("ProductPriceChangedIntegrationEvent");
+                //eventBus.PublishAsync(integrationEvent);
+            }
 
             return Ok(item);
         }
