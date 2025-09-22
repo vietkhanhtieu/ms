@@ -4,7 +4,7 @@ namespace catalog.IntegrationEvents
 {
     public interface ICatalogIntegrationEventService
     {
-        Task PublishThroughEventBusAsync(IntegrationEvent @event);
+        Task PublishThroughEventBusAsync<T>(T @event) where T : IntegrationEvent;
         Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent @event);
     }
 }

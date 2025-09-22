@@ -1,10 +1,12 @@
 using Basket.IntegrationEvents.Events;
 using Basket.IntegrationEvents.Handlers;
 using Basket.Model;
+using Basket.Repository;
 using EventBus.Abstractions;
 using EventBusRabbitMQ;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BasketContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("BasketContext")));
 
-builder.Services.AddScoped<IIntegrationEventHandler<ProductPriceChangedIntegrationEvent>, ProductPriceChangedIntegrationEventHandler>();
+builder.Services.AddSingleton<IBasketRepository, BasketRepository>();
+builder.Services.AddSingleton<IEventBus, RabbitMQEventBus>();
+
+builder.Services.AddTransient<IIntegrationEventHandler<ProductPriceChangedIntegrationEvent>,ProductPriceChangedIntegrationEventHandler>();
+builder.AddRedisDistributedCache(connectionName: "redis");
 
 
 var app = builder.Build();
@@ -38,9 +44,8 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-var eventBus = new RabbitMQEventBus();
-// Đợi subscription hoàn thành
-await eventBus.SubscribeAsync<ProductPriceChangedIntegrationEvent, ProductPriceChangedIntegrationEventHandler>();
+var eventBus = app.Services.GetRequiredService<IEventBus>();
+await eventBus.SubscribeAsync<ProductPriceChangedIntegrationEvent,ProductPriceChangedIntegrationEventHandler>(app.Services);
 
 
 app.UseHttpsRedirection();

@@ -23,7 +23,7 @@ builder.Services.AddScoped<ICatalogRepository ,CatalogRepository>();
 builder.Services.AddScoped<ICatalogIntegrationEventService, CatalogIntegrationEventService>();
 
 builder.Services.AddTransient<IIntegrationEventlogService, IntegrationEventLogServices<CatalogContext>>();
-//builder.Services.AddTransient<IEventBus, RabbitMQEventBus>();
+builder.Services.AddTransient<IEventBus, RabbitMQEventBus>();
 
 
 var app = builder.Build();
