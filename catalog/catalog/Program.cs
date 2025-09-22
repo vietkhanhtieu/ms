@@ -22,8 +22,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICatalogRepository ,CatalogRepository>();
 builder.Services.AddScoped<ICatalogIntegrationEventService, CatalogIntegrationEventService>();
 
-builder.Services.AddTransient<IIntegrationEventlogService, IntegrationEventLogServices<CatalogContext>>();
-builder.Services.AddTransient<IEventBus, RabbitMQEventBus>();
+builder.Services.AddScoped<IIntegrationEventlogService, IntegrationEventLogServices<CatalogContext>>();
+builder.Services.AddSingleton<IEventBus, RabbitMQEventBus>();
 
 
 var app = builder.Build();

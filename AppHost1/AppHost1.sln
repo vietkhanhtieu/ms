@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationEvenlogEF", "Int
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventBus", "EventBus\EventBus.csproj", "{020E8F85-4A9E-41D1-964F-F9898F79707F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventBusRabbitMQ", "EventBusRabbitMQ\EventBusRabbitMQ.csproj", "{DD1DFCA1-82C9-45BC-B98A-0F0DFEAF4C53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventBusRabbitMQ", "EventBusRabbitMQ\EventBusRabbitMQ.csproj", "{DD1DFCA1-82C9-45BC-B98A-0F0DFEAF4C53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleJob", "ScheduleJob\ScheduleJob.csproj", "{B3FB089C-CE23-4CBB-BFEC-DB2DE1576042}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{DD1DFCA1-82C9-45BC-B98A-0F0DFEAF4C53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD1DFCA1-82C9-45BC-B98A-0F0DFEAF4C53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD1DFCA1-82C9-45BC-B98A-0F0DFEAF4C53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3FB089C-CE23-4CBB-BFEC-DB2DE1576042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3FB089C-CE23-4CBB-BFEC-DB2DE1576042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3FB089C-CE23-4CBB-BFEC-DB2DE1576042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3FB089C-CE23-4CBB-BFEC-DB2DE1576042}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

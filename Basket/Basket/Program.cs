@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BasketContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("BasketContext")));
 
-builder.Services.AddSingleton<IBasketRepository, BasketRepository>();
+builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.AddSingleton<IEventBus, RabbitMQEventBus>();
 
 builder.Services.AddTransient<IIntegrationEventHandler<ProductPriceChangedIntegrationEvent>,ProductPriceChangedIntegrationEventHandler>();
