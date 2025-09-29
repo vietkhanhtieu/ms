@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using ScheduleJob.Enumn;
+using ScheduleJob.JobExcutor;
 using ScheduleJob.Model;
 using ScheduleJob.Repository;
 
@@ -33,6 +34,7 @@ namespace ScheduleJob
                     _logger.LogInformation($"Process task: {task.Id}, task type: {task.Type}");
                     try
                     {
+                        ThreadPool.QueueUserWorkItem(Process, task);
 
                     }
                     catch (Exception ex)
@@ -42,6 +44,22 @@ namespace ScheduleJob
 
                 }
                 await Task.Delay(TimeSpan.FromMinutes(1));
+            }
+        }
+
+        private void Process(object o)
+        {
+            TaskBase task = (TaskBase)o;
+            try
+            {
+                _logger.LogInformation($"Start processing task: {task.Id}, task type: {task.Type}");
+                var taskExecutor = JobExcutorFactory.GetJobExcutor(task.Type);
+                taskExecutor.ExecutorAsync(task).Wait();
+                _logger.LogInformation($"Finished processing task: {task.Id}, task type: {task.Type}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error processing task: {task.Id}, task type: {task.Type}, message: {ex.Message}");
             }
         }
 

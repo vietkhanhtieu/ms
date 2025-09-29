@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using ScheduleJob.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using ScheduleJob.JobExcutor;
+using ScheduleJob.Enumn;
 
 class Program
 {
@@ -26,17 +28,19 @@ class Program
 
         builder.Services.AddScoped<WorkerRole>();
         builder.Services.AddScoped<ITaskScheduleRepository, TaskScheduleRepository>();
+        builder.Services.AddKeyedScoped<IJobExcutor, SyncStockExcutor>(TaskType.SyncStock);
+        // thêm các executor khác...
 
         var app = builder.Build();
 
-        using var scope = app.Services.CreateScope();
-        var sp = scope.ServiceProvider;
-        var logger = sp.GetRequiredService<ILogger<Program>>();
-        logger.LogInformation("Start role");
+        //using var scope = app.Services.CreateScope();
+        //var sp = scope.ServiceProvider;
+        //var logger = sp.GetRequiredService<ILogger<Program>>();
+        //logger.LogInformation("Start role");
 
-        var role = sp.GetRequiredService<WorkerRole>();
-        await role.InitTask();
-        await role.RunAsync();
+        //var role = sp.GetRequiredService<WorkerRole>();
+        //await role.InitTask();
+        //await role.RunAsync();
     }
 
 }

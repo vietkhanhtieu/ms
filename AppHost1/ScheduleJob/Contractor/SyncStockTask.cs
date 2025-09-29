@@ -13,7 +13,7 @@ namespace ScheduleJob.Contractor
     {
         public override TaskBase AssembleDefaultTask()
         {
-            return new SyncStockExcutor()
+            return new SyncStockTask()
             {
                 Id = GenerateId(),
                 TaskSchedule = new TaskSchedule()
