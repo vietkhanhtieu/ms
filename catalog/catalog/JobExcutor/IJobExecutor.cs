@@ -2,6 +2,6 @@
 {
     public interface IJobExecutor
     {
-        System.Threading.Tasks.Task ExecutorAsync(JobBase task);
+        System.Threading.Tasks.Task ExecutorAsync(JobBase job);
     }
 }

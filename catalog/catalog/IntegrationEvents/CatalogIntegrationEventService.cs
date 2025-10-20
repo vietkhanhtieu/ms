@@ -43,14 +43,16 @@ namespace catalog.IntegrationEvents
         {
             try
             {
+                var runtimeType = @event.GetType();
                 var eventLogEntry = new IntegrationEventLogEntry
                 {
-                    Content = JsonSerializer.Serialize(@event),
+                    Content = JsonSerializer.Serialize(@event, runtimeType),
                     EventId = @event.Id,
                     CreationTime = @event.CreationDate,
                     EventTypeName = @event.GetType().FullName,
                     State = EventStateEnum.NotPublished,
-                    TimesSent = 0
+                    TimesSent = 0,
+                    EventTypeShortName = runtimeType.Name,
                 };
                 await _integrationEventLogService.SaveIntegrationEvent(eventLogEntry);
             }

@@ -1,6 +1,7 @@
 ﻿using catalog.Enumerate;
 using catalog.JobExcutor;
 using catalog.Repository.Interfaces;
+using System.Threading.Tasks;
 
 namespace catalog
 {
@@ -8,15 +9,14 @@ namespace catalog
     {
         private readonly ILogger<WorkerRole> _logger;
         private List<JobType> excludeTasks = new List<JobType>() { };
-        private IJobFactory _jobFactory;
         private int _executionCount;
         private readonly IServiceScopeFactory _scopeFactory;
+        //private readonly JobExecutorFactory _jobExcutor;
 
 
-        public WorkerRole(ILogger<WorkerRole> logger, IServiceScopeFactory scopeFactory, IJobFactory jobFactory)
+        public WorkerRole(ILogger<WorkerRole> logger, IServiceScopeFactory scopeFactory)
         {
             _logger = logger;
-            _jobFactory = jobFactory;
             _scopeFactory = scopeFactory;
         }
 
@@ -24,16 +24,19 @@ namespace catalog
         {
             _logger.LogInformation("Timed Hosted Service running.");
 
-            // When the timer should have no due-time, then do the work once now.
-            await DoWork();
-
-            using PeriodicTimer timer = new(TimeSpan.FromSeconds(30));
-
+            using PeriodicTimer timer = new(TimeSpan.FromSeconds(5));
             try
             {
                 while (await timer.WaitForNextTickAsync(stoppingToken))
                 {
-                    await DoWork();
+                    using var scope = _scopeFactory.CreateScope();
+                    var jobRepository = scope.ServiceProvider.GetRequiredService<IJobRepository>();
+                    var jobs = await jobRepository.GetAllTasks();
+                    foreach(var job in jobs)
+                    {
+                        _logger.LogInformation($"Job: {job.Id}, Type: {job.Type}, Status: {job.Status}");
+                        await DoWork(job, scope.ServiceProvider);
+                    }
                 }
             }
             catch (OperationCanceledException)
@@ -42,34 +45,19 @@ namespace catalog
             }
         }
 
-        private async Task DoWork()
+        private async Task DoWork(JobBase job, IServiceProvider serviceProvider)
         {
-            int count = Interlocked.Increment(ref _executionCount);
-
-            // Simulate work
-            await Task.Delay(TimeSpan.FromSeconds(2));
-
-            _logger.LogInformation("Timed Hosted Service is working. Count: {Count}", count);
-        }
-
-        public async Task RunAsync()
-        {
-            _logger.LogInformation("WorkerRole is running.");
+            _logger.LogInformation($"Start to process job: {job.Type}");
             try
             {
-
+                var executorFactory = serviceProvider.GetRequiredService<JobExecutorFactory>();
+                var executor = executorFactory.GetTaskExecutor(job.Type);
+                await executor.ExecutorAsync(job);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error processing worker, message: {ex.Message}");
+                _logger.LogError(ex, $"Error processing job: {job.Id}, job type: {job.Type}, message: {ex.Message}");
             }
         }
-
-        public async Task Process()
-        {
-
-        }
-
-        
     }
 }

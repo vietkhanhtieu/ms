@@ -2,6 +2,7 @@
 using catalog.JobExcutor;
 using catalog.Models;
 using catalog.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace catalog.Repository.Implementations
 {
@@ -64,9 +65,77 @@ namespace catalog.Repository.Implementations
 
         }
 
-        public Task<List<Job>> GetAllTasks()
+        public async Task<List<JobBase>> GetAllTasks()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var now = DateTime.UtcNow.Ticks;
+                var jobs = await _context.Jobs
+                 .AsNoTracking()
+                 .Where(j => j.NextRunTime < now)
+                 .Include(j => j.JobSchedule)
+                 .Select(j => new Job
+                 {
+                     Id = j.Id,
+                     Type = j.Type,
+                     Status = j.Status,
+                     NextRunTime = j.NextRunTime,
+                     JobSchedule = j.JobSchedule == null
+                         ? null
+                         : new JobSchedule
+                         {
+                             Interval = j.JobSchedule.Interval,
+                             JobInternalType = j.JobSchedule.JobInternalType
+                         }
+                 })
+                 .ToListAsync();
+
+                var result = new List<JobBase>(jobs.Count);
+                foreach (var job in jobs)
+                {
+                    if (TryAssembleTask(job, out var task))
+                    {
+                        result.Add(task);
+                    }
+                }
+
+                return result;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Error GetAllTasks task: {ex.Message}");
+                return new List<JobBase>();
+
+            }
+
+        }
+
+        private bool TryAssembleTask(Job job, out JobBase task)
+        {
+            try
+            {
+                task = _jobFactory.GetTaskExecutor(job.Type);
+                task.Id = job.Id;
+                task.Type = job.Type;
+                task.NextRunTime = job.NextRunTime;
+                task.Status = job.Status;
+
+                if (job.JobSchedule != null)
+                {
+                    task.JobSchedule = new JobSchedule
+                    {
+                        Interval = job.JobSchedule.Interval,
+                        JobInternalType = job.JobSchedule.JobInternalType
+                    };
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error assembling task: {ex.Message}");
+                task = null!;
+                return false;
+            }
         }
 
         public Task<bool> ReleaseTask(string id)
@@ -77,7 +146,7 @@ namespace catalog.Repository.Implementations
 
         private Job ConvertJobBaseToJob(JobBase job)
         {
-            var taskSchedule = job.JobSchedule != null
+            var taskSchedule = job.JobSchedule == null
                 ? new JobSchedule
                 {
                     Id = Guid.NewGuid().ToString(),

@@ -8,10 +8,21 @@ namespace catalog.JobExcutor
         private readonly IServiceProvider _sp;
         public JobFactory(IServiceProvider sp) => _sp = sp;
 
-        public JobBase GetTaskExecutor(JobType taskType) => taskType switch
+        public JobBase GetTaskExecutor(JobType jobType)
         {
-            JobType.SyncStock => _sp.GetRequiredService<SyncStockJob>(),
-            _ => throw new NotSupportedException($"Not supported task: {taskType}")
-        };
+            JobBase task = null;
+            switch (jobType)
+            {
+                case JobType.SyncStock:
+                    task = _sp.GetRequiredService<SyncStockJob>();
+                    break;
+                case JobType.EventJob:
+                    task = _sp.GetRequiredService<EventJob>();
+                    break;
+                default:
+                    return null;
+            }
+            return task.AssembleDefaultTask();
+        }
     }
 }

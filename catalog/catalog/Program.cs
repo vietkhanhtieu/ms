@@ -19,7 +19,7 @@ builder.Services.AddControllers();
 //builder.Services.AddDbContext<CatalogContext>(options =>
 //    options.UseNpgsql(builder.Configuration.GetConnectionString("CatalogDbContext")));
 
-builder.Services.AddDbContext<CatalogContext>(options => options.UseNpgsql("catalogDbConn"));
+builder.AddNpgsqlDbContext<CatalogContext>(connectionName: "CatalogDbContext");
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,14 +27,21 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICatalogRepository ,CatalogRepository>();
 builder.Services.AddScoped<IJobRepository ,JobRepository>();
 builder.Services.AddScoped<ICatalogIntegrationEventService, CatalogIntegrationEventService>();
+builder.Services.AddScoped<IIntergrationEventLogRepository, IntergrationEventLogRepository>();
 
 builder.Services.AddScoped<IIntegrationEventlogService, IntegrationEventLogServices<CatalogContext>>();
 builder.Services.AddSingleton<IEventBus, RabbitMQEventBus>();
-builder.Services.AddSingleton<IJobFactory, JobFactory>();
+builder.Services.AddScoped<IJobFactory, JobFactory>();
 builder.Services.AddHostedService<WorkerRole>();
 
+// backgroug task
 builder.Services.AddTransient<SyncStockExecutor>();
+builder.Services.AddTransient<EventExecutor>();
+
 builder.Services.AddTransient<SyncStockJob>();
+builder.Services.AddTransient<EventJob>();
+builder.Services.AddTransient<JobExecutorFactory>();
+
 
 
 var app = builder.Build();

@@ -2,9 +2,14 @@
 {
     public class SyncStockExecutor : IJobExecutor
     {
-        public System.Threading.Tasks.Task ExecutorAsync(JobBase task)
+        private readonly ILogger<SyncStockExecutor> _logger;
+
+        public SyncStockExecutor(ILogger<SyncStockExecutor> logger)
+            => _logger = logger;
+
+        public async System.Threading.Tasks.Task ExecutorAsync(JobBase task)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Starting stock synchronization for Task ID: {task.Id}");
         }
     }
 }

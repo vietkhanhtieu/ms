@@ -11,6 +11,7 @@ namespace catalog.JobExcutor
         public IJobExecutor GetTaskExecutor(JobType taskType) => taskType switch
         {
             JobType.SyncStock => _sp.GetRequiredService<SyncStockExecutor>(),
+            JobType.EventJob => _sp.GetRequiredService<EventExecutor>(),
             _ => throw new NotSupportedException($"Not supported task: {taskType}")
         };
     }

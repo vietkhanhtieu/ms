@@ -11,9 +11,9 @@ var catalogApi = builder.AddProject<Projects.catalog>("catalogservice")
                       .WithReference(catalogDbConn)
                       .WithExternalHttpEndpoints();
 
-//var basketApi = builder.AddProject<Projects.Basket>("BasketService")
-//                        .WithReference(redis)
-//                        .WithExternalHttpEndpoints();
+var basketApi = builder.AddProject<Projects.Basket>("BasketService")
+                        .WithReference(redis)
+                        .WithExternalHttpEndpoints();
 
 
 var scheduleJob = builder.AddProject<Projects.ScheduleJob>("scheduleJob")
