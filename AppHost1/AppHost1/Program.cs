@@ -19,4 +19,6 @@ var basketApi = builder.AddProject<Projects.Basket>("BasketService")
 var scheduleJob = builder.AddProject<Projects.ScheduleJob>("scheduleJob")
                       .WithExternalHttpEndpoints();
 
+builder.AddProject<Projects.Customer>("customer");
+
 builder.Build().Run();

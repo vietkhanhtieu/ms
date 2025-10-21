@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Basket\Basket\Basket.csproj" />
     <ProjectReference Include="..\..\catalog\catalog\catalog.csproj" />
+    <ProjectReference Include="..\Customer\Customer.csproj" />
     <ProjectReference Include="..\ScheduleJob\ScheduleJob.csproj" />
   </ItemGroup>
 
